@@ -1,0 +1,9 @@
+### New in version 1.3 ###
+- Added the data-type="decimal" to allow numbers of the form "123.45", "0.1234567" or "98765".  
+- Corrected a documentation issue  
+- Corrected an issue with Checkboxes, that prevented form submission without selecting all of them.  
+
+### New in version 1.4 ###
+- Fixed a RegEx issue. All custom regex rules could be fooled.
+- Added a default password regex for A-Z, a-z, 0-9 and @?!#._-+ and the option to disable it (See documentation for details)
+- Added a note to the documentation

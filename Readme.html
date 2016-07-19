@@ -1,0 +1,176 @@
+<html>
+<head><title>Valideight.js - A real-time form validator for the web</title></head><body>
+<link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+<div class="row">
+    <div class="col-xs-10 col-xs-offset-1">
+<h1 id="valideightjs-a-real-time-form-validator-for-the-web">Valideight.js - A real-time form validator for the web</h1>
+<hr />
+<h2 id="includes">Includes</h2>
+<h3 id="valideightjs">Valideight.js</h3>
+<p>Valideight.js provides a real-time form validator for your web page forms.<br />
+Full of features, it allows you to specify up to the slightest detail and restriction in any &lt;input/&gt; field.<br />
+</p>
+<h3 id="valideightphp">Valideight.php</h3>
+<p>In addition, <code>Valideight.js</code> comes with a back-end form validator, the PHP class <code>Valideight.php</code>, that accepts the same parameters as the JS and returns whether the field is valid or not in accordance with the client-side validation.<br />
+This is strongly recommended for delicated registration forms (and similar), since the front-end validation rules can easily be overpassed by an experienced programmer or web user.</p>
+<hr />
+<p>Features</p>
+<ul>
+<li><a href="#initialize">A super-easy to use jQuery plugin</a></li>
+<li><a href="#live-validation">Live validation: warns you as you type</a></li>
+<li><a href="#customization">Fully-customizable forms, up to the slightest detail</a></li>
+<li><a href="#regex">Custom RegEx validation rules</a></li>
+<li><a href="#error-message">Custom error messages</a></li>
+<li><a href="#no-validate">Does not validate everything: Just add "data-novalideight" to an input or their parents it won't validate.</a></li>
+<li><a href="#globals">Global parameters</a></li>
+<li><a href="#reset-form">Reset validation: set all fields as fresh as new with a simple order</a></li>
+</ul>
+<h1 id="initialize-the-valideightor">Initialize the Valideightor</h1>
+<p><p id="initialize"></p></p>
+<h3 id="snippets">Snippets</h3>
+<p>Include the JS and CSS (optional) files, preferably each of them the last:
+<!-- language-all: lang-html --></p>
+<pre><code>&lt;script src="path/to/valideight.js" type="text/javascript"&gt;&lt;/script&gt;
+
+&lt;!-- Optional but recommended --&gt;
+&lt;link  href="path/to/valideight.css" rel="stylesheet" type="text/css"/&gt;
+</code></pre>
+<p>Now, to automatically initialize <code>valideight</code> on a form, simply add a <code>data-valideight</code> attribute to it:
+<!-- language-all: lang-html --></p>
+<pre><code>&lt;form data-valideight=""&gt;
+    &lt;!-- Your inputs go here --&gt;
+&lt;form/&gt;
+</code></pre>
+<p>On document ready the class <code>.valideightor</code> is added to the form and the <code>data-valideight</code> attribute is removed.<br />
+</p>
+<h3 id="initialization">Initialization</h3>
+<p>Its initialization is automatically called after DOM Ready, accepting parameters by default. Those <strong>must</strong> be set under the global variable <code>var = valideightGlobals</code> from any script or can also be set directly from the <code>/* GLOBALS */</code> section inside the <code>valideight.js</code> file (at the top).
+<!-- language: lang-js --></p>
+<pre><code>$(document).ready(function() {
+    $("form[data-valideight]").valideight(valideightGlobals);
+});
+</code></pre>
+<p>The global settings <code>valideightGlobals</code> object can contain the following parameters (though none is mandatory):
+<!-- languege: lang-js --></p>
+<pre><code>valideightGlobals = {
+    wrongField : "Please enter a valid value", // default validator message in case data-error is not specified
+    successCallback: function() {},            // triggered when validation is OK
+    errorCallback: function() {},              // triggered when submitted with wrong fields
+    onValideightReady: function() {},          // triggered after valideight.js is ready
+    minPassLength: 4,                          // minimum password length for password inputs
+    bootstrap: false                           // if using bootstrap, set it to true for a fully-native validator
+};
+</code></pre>
+<p>If any of those parameters is specified, it will be overwritten.</p>
+<p><strong>Note</strong>: <code>successCallback</code> and <code>errorCallback</code> are very interesting functions. If you have a custom function <code>postComment()</code> that handles an AJAX form post, calling <code>postComment()</code> after the form has been submitted <em>only if the form is valid</em> is as easy as <code>successCallback: postComment</code>;
+Equally easy, you can have a fallback function for wrong submissions, like an alert box or similar.</p>
+<p><strong>Note2</strong>: You can also initialize <code>valideight</code> manually, by calling, after document ready:</p>
+<pre><code>$("#myForm").valideight(options) // #myForm does NOT have the attribute data-valideight
+</code></pre>
+<h3 id="nesting-structure">Nesting structure</h3>
+<p>It is also required to nest each input inside a container with class <code>.valideight-box</code>
+<!-- language: lang-html --></p>
+<pre><code>&lt;form data-valideight=""&gt;
+    &lt;div class="valideight-box"&gt;
+        &lt;input type="text" .... /&gt;
+    &lt;/div&gt;
+    &lt;div class="valideight-box"&gt;
+        &lt;textarea .... &gt;&lt;/textarea&gt;
+    &lt;/div&gt;
+    .....
+&lt;/form&gt;
+</code></pre>
+<p><strong>Note</strong>: Good news! In bootstrap, the <code>div.valideight-box</code> <em>coincides</em> with the <code>div.form-group</code>.<br />
+</p>
+<p>If you want to trigger a form <em>after</em> <code>$(document).ready()</code>, you must call it manually:
+<!-- language: lang-js --></p>
+<pre><code>$("#myNewForm").valideight();
+</code></pre>
+<h3 id="restart-the-form-and-unpaint-the-fields">Restart the form and unpaint the fields</h3>
+<p>It is also important to remark that an invalid input field remains invalid until it is corrected.<br />
+This may seem obvious, but in the case of <em>form recycling</em> (using the same form for, for example, editing different comments in a popover) it may happen that, if the popover was closed while having wrong fields, when opened again they may still with the <code>.has-error</code> classes.<br />
+To remove this, just restart the form with JavaScript:
+<p id="reset-form"></p>
+<!-- language: lang-js --></p>
+<pre><code>$("#myRecycledForm").valideight({callback: 'restart'});
+</code></pre>
+<h1 id="live-validation">Live validation</h1>
+<p><p id="live-validation"></p>
+Whenever an input contains invalid data, the class <code>.has-error</code> is added to the parent of the input (the container <strong>valideight-box</strong>) and, when the input blurs (i.e. <em>loses focus</em>) another class, <code>.has-error-message</code> is added.<br />
+(Notice that <code>.has-error-data</code> <em>only</em> gets appended when the input loses focus).<br />
+Both classes are automatically remove when the input regains valid input data (i.e. when it's  <em>valid</em> again).</p>
+<p>Using CSS (and hence the importance of the <code>valideight.css</code> styes file), the input (or textarea) gets a red border (indicating error) when <code>.has-error</code> gets appended and an <a href="#error-message">error message</a> shows when <code>.has-error-message</code> is added. Use your own CSS rules to do wonderful things.</p>
+<p>On the contrary, if a user has interacted with a field and such field is now valid, the class <code>.has-error</code> will be added to the input parent <code>.valideight-box</code>. No custom CSS rules are set, but you can set your own, like painting the field green.</p>
+<p>Needless to say for those of you familiarized with Twitter Bootstrap, <code>Valideight.js</code> works beautifully with it, since the error classes are completely the same.
+For an optimum TB performance, add the <code>valideight.css</code> stylesheet and set <code>bootstrap = true</code> in the global options configuration variable <code>valideightGlobals</code>.</p>
+<h1 id="input-customization">Input customization</h1>
+<p><p id="customization"></p>
+Valideight.js is populated with a wide range of features (available through attributes) that allow you to customize the behaviour (i.e. valid-invalid inputs).<br />
+Some attributes are generic (i.e. <code>data-minlength</code>) and some of them are specific (i.e. <code>data-datetype</code>).<br />
+</p>
+<p>The generic ones are the following:</p>
+<ul>
+<li><code>required</code>: The default required attribute specifies whether it must be filled to be valid or no. In addition to use it for required fields (such as email or password) it is very useful for other inputs (such as the required checkbox for <em>Terms and conditions</em>, for example).</li>
+<li>
+<p><code>type</code>: The HTML-valid types are: </p>
+<ul>
+<li><code>text</code></li>
+<li><code>email</code></li>
+<li><code>password</code></li>
+<li><code>checkbox</code> </li>
+<li><code>radio</code> </li>
+<li><code>file</code><br />
+Input type <code>submit</code> is useless for the form validator, and non-HTML5-standards (such as <code>number</code>) are not recommended, since they are unreadable from IE. As a workaround, the <code>data-type</code> attribute exists.<br />
+</li>
+</ul>
+</li>
+<li>
+<p><code>data-type</code>: This attribute overwrites the <strong>validation</strong> type set by the <code>type</code> attribute (overwrites <em>only</em> the validation, not the behaviour of the field). In addition to the types specified before (which can be used here, though most of the time there is no point in it), some additional types exist:</p>
+<ul>
+<li><code>number</code>: Supported by modern browsers (Chrome even adds an up-down selector), this <code>data-type</code> will <em>only</em> allow numbers. I personally do <em>not</em> recommended, and prefer to set <code>type='text' data-type='number'</code></li>
+<li><code>date</code>: This type allows only a date format, being US (YYYY-MM-DD) by default. You can specify European (DD-MM-YYYY) by adding the <code>data-datetype="EU"</code> attribute to the field.</li>
+<li><code>url</code>: With this attribute specified, the field will only be valid if a valid URL is specified (<code>http</code>, <code>https</code> are optional). Both <em>www.example.com</em> and <em>http://www.example.com/index.html?foo=bar</em> are valid.</li>
+<li><code>decimal</code>: This attribute allows only decimal numbers of the form "123.45", "0.1234567" or "98765".</li>
+</ul>
+</li>
+<li><code>data-minlength</code>: The minimum length of the field. Useful for passwords, names, texts... Setting it to <code>0</code> equals to setting the field as required.</li>
+<li><code>data-check</code>: In the case of passwords, a "confirm password" field might be needed. To solve this, add an ID (i.e. <code>#password</code>) to the password field and a <code>data-check="password"</code> to the "confirm password" input</li>
+<li><code>data-datetype</code>: As specified in the <code>data-type</code> attribute, this works in conjunction to <code>data-type="date"</code>, and specifies the desired format for the date. It can be <code>US</code> (default, DD-MM-YYYY or MM-DD-YYYY) or <code>EU</code> (YYYY-MM-DD, the natural one for comparing dates).</li>
+<li><code>data-regex</code>:<em>If</em> specified, <em>it will overwrite</em> the <code>valideight.js</code> pre-set RegEx (such as those for <em>email</em>, <em>number</em>, ...). Extremely powerful for custom rules (like a password with required numbers, a specific type of username...). <em>Should</em> be used with <code>type="text"</code> or <code>type="password"</code> for optimum performance.<br />
+<strong>Note</strong>: From versions <code>1.4</code> and up, the password regex <code>A-Z a-z 0-9 @?!#._-+</code> is applied by default. Use <code>data-regex="none"</code> to disable it. <p id="regex"></p></li>
+</ul>
+<h1 id="custom-error-messages">Custom error messages</h1>
+<p><p id="error-message"></p>
+To set a custom error message, add it to the input as a <code>data-error</code> attribute. Dynamically on load, a sibling is added to each of the inputs containing such message and it will be shown when a <code>.has-error</code> input loses focus. </p>
+<p><strong>This parameter is required</strong>, so if you want an input field <em>without</em> any error, set <code>data-error="none"</code> or <code>data-error="false"</code>.<br />
+If <code>data-error</code> were not specified, a default "Please enter a valid value" text would be added. This default text can be modified from the global configurations in the <code>valideight.js</code> file, and can be overwritten by setting <code>wrongField : "Hey! Wrong!"</code> in the options.</p>
+<h1 id="prevent-validation-for-specific-inputs">Prevent validation for specific inputs</h1>
+<p><p id="no-validate"></p>
+It might be desired not to validate some input fields <em>even if</em> they belong to a <code>form.valideight</code> form. To do so, add the attribute <code>data-novalideight</code> to a field or even to a container of many fields.<br />
+</p>
+<p>Moreover, if inside that container of non-validated fields it is desired to validate a particular one, simply add the attribute <code>data-forcevalideight</code> and, even if a parent or itself contains the <code>novalideight</code> data attribute, it will flow throught the <code>Valideight.js</code> validation rules. </p>
+<h1 id="submit-the-form">Submit the form!</h1>
+<p>When submitting the <code>form</code> (let's say <code>#myForm</code>), two different scenarios are possible:</p>
+<ul>
+<li>
+<p>AJAX form submission <strong>without</strong> <code>$("#myForm").on('submit', ...)</code> event triggered:<br />
+In this case, prior to the AJAX call a validation is needed.<br />
+To do so, validate the form object
+<!-- language: lang-js --></p>
+<pre><code>if (valideight($("#myForm"))) {
+    // valid form!
+    // do your ajax stuff here:
+    $.ajax({
+       ...
+       ... ...
+    });
+} else {
+    // invalid form! The wrong fields will be automatically highlighted
+}
+</code></pre>
+</li>
+<li>
+<p>HTML form submission (i.e. <em>reloading</em> the page). If <code>successCallback : false</code> in the global options object, the form will be submitted if it is valid, and the page will be reloaded/redirected; if it's not valid, <code>errorCallback</code> will be triggered. As easy as that.</p>
+</li>
+</ul>
+</div></div></body></html>
