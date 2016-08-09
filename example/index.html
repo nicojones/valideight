@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Example</title>
+        <link type="text/css" rel="stylesheet" href="bootstrap.min.css"/>
+        <link type="text/css" rel="stylesheet" href="../src/valideight.css"/>
+    </head>
+    <body style="overflow-x: hidden;">
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
+                <h1>Example Valideight.js</h1><br/>
+                <form action="#" type="POST" data-valideight>
+                    <div class="form-group valideight-box">
+                        Standard optional input
+                        <input class="form-control" type="text" name="text-0"
+                               data-error="There's no possible error here">
+                    </div>
+                    <div class="form-group valideight-box">
+                        Optional, but 5 characters
+                        <input class="form-control" type="text" name="text-5" data-minlength="5"
+                               data-error="Either you leave it empty or enter 5 characters">
+                    </div>
+                    <div class="form-group valideight-box">
+                        Required 5 characters
+                        <input class="form-control" type="text" data-type="url" required=""
+                            name="text-req-5" data-minlength="5" data-error="You MUST enter at least 5 characters">
+                    </div>
+                    <div class="form-group valideight-box">
+                        Password 5 characters
+                        <input class="form-control" type="password" required="" id="password-field"
+                            data-minlength="5" name="password-field" 
+                            data-error="Please enter a password 5+ characters long">
+                    </div>
+                    <div class="form-group valideight-box">
+                        Password: must be the same as above
+                        <input class="form-control" type="password" data-type="url"
+                            data-check="password-field" name="password-check" data-error="Passwords don't match">
+                    </div>
+                    <div class="form-group valideight-box">
+                        Must be a number
+                        <input class="form-control" type="text" data-type="number" required=""
+                            name="number" data-error="Just put some numbers and it'll do">
+                    </div>
+                    <div class="form-group valideight-box">
+                        Must be a decimal number
+                        <input class="form-control" type="text" data-type="decimal" required=""
+                            name="decimal" data-error="Decimals are separated by a dot, like 123.45">
+                    </div>
+                    <div class="form-group valideight-box">
+                        Date (yyyy-mm-dd)
+                        <input class="form-control" type="text" data-type="date" required=""
+                            name="date" data-datetype="US" data-error="When was that?">
+                    </div>
+                    <div class="form-group valideight-box">
+                        Date (dd-mm-yyyy)
+                        <input class="form-control" type="text" data-type="date" required=""
+                            name="date" data-datetype="EU" data-error="That's also not a valid date">
+                    </div>
+                    <div class="form-group valideight-box">
+                        Custom field ^[0-9]{2}\-[a-z]{3}\/[0-9]{1}$ (i.e. 12-abc/8)
+                        <input class="form-control" type="text" data-type="date" required=""
+                            name="date" data-datetype="^[0-9]{2}\-[a-z]{3}\/[0-9]{1}$" data-error="Wrong date or invalid regex, my friend">
+                    </div>
+                    <div class="form-group valideight-box">
+                        URL
+                        <input class="form-control" type="text" data-type="url" required=""
+                            name="url" data-error="That doesn't look like a link you'd visit">
+                    </div>
+                    <div class="form-group valideight-box">
+                        Email
+                        <input class="form-control" type="text" data-type="email" required=""
+                            name="email" data-minlength="4" data-error="If you see this it's because the address doesn't fit the web standards">
+                    </div>
+                    <div class="form-group valideight-box">
+                        Radio buttons
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <label>
+                                    First!
+                                    <input type="radio" required=""
+                                        name="radio" value="1">
+                                </label>
+                            </div>
+                            <div class="col-xs-4">
+                                <label>
+                                    Second!
+                                    <input type="radio" required=""
+                                        name="radio" value="2">
+                                </label>
+                            </div>
+                            <div class="col-xs-4">
+                                <label>
+                                    ... third...
+                                    <input type="radio" required=""
+                                        name="radio" value="3">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group valideight-box">
+                        <label>
+                            <input type="checkbox" required=""
+                                name="checkbox" data-error="If you see this it's because you haven't confirmed">
+                            I confirm that I am ticking a checkbox
+                        </label>
+                    </div>
+                    <div class="form-group valideight-box">
+                        <input type="submit" class="btn btn-success form-control" value="Submit"/>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+        <script type="text/javascript" src="jQuery.js"></script>
+        <script type="text/javascript" src="duplicate-input.js"></script>
+        <script type="text/javascript" src="../src/valideight.js"></script>
+        <script type="text/javascript">
+            var valideightGlobals = {
+                // Just set the options you want for ALL forms on this page:
+                successCallback: function() {
+                    alert("All the fields are OK! You might as well save this info somewhere")
+                },
+                errorCallback: function() {
+                    alert("You clicked 'submit' but there are some fields in red...");
+                }
+            }
+
+        </script>
+    </body>
+</html>

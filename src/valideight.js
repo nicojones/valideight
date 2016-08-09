@@ -28,8 +28,8 @@ $.fn.valideight = function(e) {
         successCallback: e.successCallback || function() { /*alert("Everything OK!");*/ },
         errorCallback: e.errorCallback || function() { /*alert("Wrong fields!");*/ },
         onValideightReady: e.onValideightReady || function() {/*console.log("Valideight.js loaded!")*/},
-        minPassLength: e.minPassLength || 4,
-        bootstrap: e.bootstrap || false,
+        minPassLength: e.minPassLength || 4, // Minimum length for the password
+        bootstrap: e.bootstrap || false, // set to true if you're using bootstrap!
         responsiveSize: e.responsiveSize || 600,
         dataTooltip: e.dataTooltip || 'tooltip' // the data-(...) to use for tooltips, in case there is a conflict with user data-attributes.
     };
@@ -75,22 +75,29 @@ $.fn.valideight = function(e) {
      * @param input The DOM input field
      */
     checkValideightInput = function(input) {
+
 //        console.log("input.required is: ", input.required, " for the input " + input.name)
-        var type   = $(input).data('type') || input.type, // type of input (text, number, password... and date)
+        var type   = $(input).attr('data-type') || input.type, // type of input (text, number, password... and date)
             val    = (typeof input.value === 'undefined' ? input.innerHTML : input.value) || "", // :-)
-            minLen = $(input).data('minlength') || false, //minimum input length
-            notReq = !(!!input.required || !!$(input).data('required')) && (val.length === 0), // TRUE if (not required && empty), i.e. VALID
-            cRegEx = $(input).data('regex') || input.pattern || false, //if set, it will validate using the custom regex expression
-            check  = $(input).data('check') || false;
+            minLen = $(input).attr('data-minlength') || false, //minimum input length
+            notReq = !($(input).attr('required') || !!$(input).attr('data-required')) && (val.length === 0), // TRUE if (not required && empty), i.e. VALID
+            cRegEx = $(input).attr('data-regex') || input.pattern || false, //if set, it will validate using the custom regex expression
+            check  = $(input).attr('data-check') || false;
 //        console.log(input);
 //        console.log("value: ", val);
 //        console.log("type: ", type);
 //        console.log("notReq: ",notReq);
         // console.log(type + " ----- " + check + " -- " + notReq + " -- ");
-        if (check) // this means we are checking that two fields match, like a confirm Password or confirm Email
+        if (check) { // this means we are checking that two fields match, like a confirm Password or confirm Email
              return Boolean(document.getElementById(check).value === val);
-        if(notReq) return true; // this means it is a VALID field
-        if (minLen && (val.length < minLen)) return false; // returns false if the input length is shorter than min required.
+        }
+        if(notReq) {
+            return true; // this means it is a VALID field
+        }
+        if (minLen && (val.length < minLen)) {
+            return false; // returns false if the input length is shorter than min required.
+        }
+
         switch (type) {
             case "text":
             case "textarea":
@@ -138,29 +145,31 @@ $.fn.valideight = function(e) {
                 cRegEx = cRegEx || /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,5})$/gi;
                 // var execute = regex.exec(val);
                 var match = val.match(cRegEx) || false;
+                console.log("email", match);
                 return Boolean(match);
                 break;
 
             case "url":
-                cRegEx = cRegEx || /^(((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
+                cRegEx = cRegEx || /^(((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w\-\_\+]*))?)$/;
                 var match = val.match(cRegEx) || false;
+                console.log(match)
                 return Boolean(match);
                 break;
 
             case "date":
-                var dateType = $(input).data('datetype') || "US" || "EU"; //Custom, US (YYYY-MM-DD) or European (DD-MM-YYYY)
+                var dateType = $(input).attr('data-datetype') || "US" || "EU"; //Custom, US (YYYY-MM-DD) or European (DD-MM-YYYY)
                 switch (dateType) {
                     case "US":
-                        cRegEx = cRegEx || /^[0-9]{4}\-[0-9]{1,2}\-[0-9]{1,2}$/;
+                        cRegEx = /^[0-9]{4}\-[0-9]{1,2}\-[0-9]{1,2}$/;
                         break;
 
                     case "EU":
-                        cRegEx = cRegEx || /^[0-9]{1,2}\-[0-9]{1,2}\-[0-9]{4}$/;
+                        cRegEx = /^[0-9]{1,2}\-[0-9]{1,2}\-[0-9]{4}$/;
                         break;
 
                     default:
                         //custom regex!!!
-                        cRegEx = cRegEx || dateType;
+                        cRegEx = dateType;
                         break;
                 }
                 var match = val.match(cRegEx) || false;
@@ -230,18 +239,18 @@ $.fn.valideight = function(e) {
      * Triggers on form submission and processes the validation
      */
     this.on("submit", function(e) {
-        console.log("Submitted! ... Validating function ...");
+        console.info("Submitted! ... Validating function ...");
         //submitting form
         var valid = valideightForm($(this));
         if (valid === true) {
-            console.log("Valid!")
+            console.info("Valid!")
             if (typeof options.successCallback === 'function') {
                 e.preventDefault(); e.stopPropagation();
                 options.successCallback();
             }
             return true;
         } else if (valid === false) {
-            console.log("Not valid!");
+            console.warn("Not valid!");
             options.errorCallback();
             return false;
         }

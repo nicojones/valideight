@@ -9,7 +9,7 @@ form.valideight .error-block {
     top: -5px;
     border-radius: 0 0 4px 4px;
 }
-form.valideight .has-error .error-block {
+form.valideight .has-error-message .error-block {
     display: block !important;
 }
 
